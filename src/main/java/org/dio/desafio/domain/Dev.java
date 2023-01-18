@@ -3,6 +3,7 @@ package org.dio.desafio.domain;
 
 import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 public class Dev {
@@ -19,11 +20,25 @@ public class Dev {
         this.finishedContents = finishedContents;
     }
 
-    public void subscribeBootcamp(Bootcamp bootcamp) {}
+    public void subscribeBootcamp(Bootcamp bootcamp) {
+        this.subscribedContents.addAll(bootcamp.getContents());
+        bootcamp.getSubscribedDevs().add(this);
+    }
 
-    public void progress() {}
+    public void progress() {
+        Optional<Content> content = this.subscribedContents.stream().findFirst();
+        if (content.isPresent()) {
+            this.finishedContents.add(content.get());
+            this.subscribedContents.remove(content.get());
+        }
+        else {
+            System.err.println("You're not subscribed!");
+        }
+    }
 
-    public void calculateXp() {}
+    public double calculateXp() {
+        return this.finishedContents.stream().mapToDouble(content -> content.calculateXp()).sum();
+    }
 
     public String getName() {
         return name;
